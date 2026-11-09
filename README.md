@@ -76,6 +76,22 @@ The goal is to reduce the effort required to plan a trip while providing travele
 
 ---
 
+---
+
+## Live Demo
+
+**[Explore the project in 6 touches](https://mohammed-turk.github.io/SahilDarbak-demo/)**
+
+A guided, interactive walkthrough of the full journey (travel request, AI destination, itinerary, budget, check-in and city guide, nearby travelers and chat). It uses demo data and is built from the real pages of the project.
+
+Project presentation: [SahilDarbak presentation.pdf](SahilDarbak%20presentation.pdf)
+
+| Flow | Owner | Jump to |
+|---|---|---|
+| Discover | Razan Almadan | [Discover](#discover--razan-almadan) |
+| Plan | Lama Alharbi | [Plan](#plan--lama-alharbi) |
+| Explore | Mohammed Aljubaili | [Explore](#explore--mohammed-aljubaili) |
+
 ## Core User Flow
 
 ```mermaid
@@ -271,7 +287,754 @@ classDiagram
     User "1" --> "0..*" BlockedUser : blocks
     User "1" --> "0..*" BlockedUser : is blocked
 ```
-## Flow 3: Explore (Mohammed Aljubaili)
+
+---
+
+## Discover | Razan Almadan
+
+I worked on several of SahlDarbak's core features, focusing on **AI-powered travel assistance, destination discovery, travel preparation, transportation, and the community experience**.
+
+### 🤖 AI Destination Recommendation
+
+```http
+GET /api/v1/ai/get/Generated/countries/{travel_request_id}
+```
+
+Provides personalized country recommendations based on the user's travel preferences, restrictions, travel dates, and budget.
+
+The feature combines **AI with external travel data** to evaluate potential destinations and provide recommendations that better match the user's requirements.
+
+**AI Model:** Google Gemini Flash Lite  
+**External APIs:** OpenWeather API, Nager.Date API
+
+OpenWeather provides weather information for candidate destinations, while Nager.Date provides public-holiday information. These results are combined with the user's preferences to generate personalized recommendations.
+
+---
+
+### 🌍 Select Destination & Create Trip
+
+```http
+POST /api/v1/trip/select/{user_id}/{travel_request_id}
+```
+
+Allows users to select one of the recommended destinations and create their trip.
+
+This endpoint connects the **AI destination recommendation stage** with the actual trip-planning workflow, carrying the user's travel requirements into their selected destination.
+
+**AI Model:** Not used  
+**External APIs:** None
+
+---
+
+### 🌤️ Weather Information
+
+```http
+GET /api/v1/trip/weather/{tripId}
+```
+
+Retrieves weather information for the user's selected destination.
+
+The weather information helps travelers understand the conditions they can expect during their trip and also supports other travel-assistance features.
+
+**AI Model:** Not used  
+**External API:** OpenWeather API
+
+---
+
+### 🎉 Public Holiday Information
+
+```http
+GET /api/v1/trip/holidays/{tripId}
+```
+
+Retrieves public-holiday information for the user's destination during their travel period.
+
+This helps travelers identify holidays that may affect their trip and consider them when planning their activities and travel dates.
+
+**AI Model:** Not used  
+**External API:** Nager.Date API
+
+---
+
+### 🎒 AI Packing List
+
+```http
+POST /api/v1/trip/generate-packing-list/{tripId}
+```
+
+Generates a personalized packing list using AI based on the user's destination, weather, activities, and trip information.
+
+The generated list is organized into practical categories such as clothing, shoes, weather essentials, activity essentials, travel essentials, and personal care.
+
+**AI Model:** Google Gemini Flash Lite  
+**External APIs:** None
+
+---
+
+### 🚗 AI Transportation Recommendation
+
+```http
+POST /api/v1/trip/generate-transportation/{tripId}
+```
+
+Provides AI-powered transportation recommendations for the places included in the user's trip.
+
+The feature uses real route and location data to determine suitable transportation options, such as walking or public transportation.
+
+**AI Model:** Google Gemini 3.5 Flash Lite  
+**External API:** Geoapify API
+
+Geoapify provides route and transportation data, while Gemini analyzes the available options and recommends a suitable transportation method.
+
+---
+
+### 📧 Transportation Information by Email
+
+```http
+POST /api/v1/trip/send-transportation-email/{tripId}
+```
+
+Allows travelers to send their generated transportation recommendations directly to their email.
+
+This gives users convenient access to their transportation information while traveling.
+
+**AI Model:** Not used  
+**External APIs:** None
+
+---
+
+### ⚖️ AI Country Comparison
+
+```http
+POST /api/v1/ai/compare-countries
+```
+
+Allows users to compare two destinations based on their travel requirements.
+
+The AI evaluates factors such as **weather, activities, environment, crowds, and budget**, then provides a final recommendation and explains why one destination may be more suitable for the traveler.
+
+**AI Model:** Google Gemini Flash Lite  
+**External APIs:** OpenWeather API, Nager.Date API
+
+The comparison combines the user's travel-request information with destination data to provide a more personalized recommendation.
+
+---
+
+### 🌎 Travel Community
+
+The Community feature provides a space for travelers to share and explore travel experiences.
+
+Users can:
+
+- Create travel posts
+- Browse community posts
+- Search posts by country
+- View individual posts
+- Discover highly-rated travel experiences
+
+The feature adds a social layer to SahlDarbak, allowing travelers to learn from the experiences of other users.
+
+**AI Model:** Not used directly  
+**External APIs:** None
+
+**Community Endpoints:**
+
+```http
+GET /api/v1/community/get
+POST /api/v1/community/post/{user_id}
+GET /api/v1/community/country/{country}
+GET /api/v1/community/post/{postId}
+GET /api/v1/community/get/by/rating
+GET /api/v1/community/get/by/name/and/rating/{country}
+```
+
+---
+
+### 🛡️ AI Community Moderator
+
+The Community feature is supported by an **AI-powered moderation system** that reviews user-generated content before it is published.
+
+The AI analyzes submitted community content and helps identify inappropriate or unsuitable posts, helping maintain a safer and higher-quality travel community.
+
+**AI Model:** Google Gemini 3.5 Flash Lite  
+**External APIs:** None
+
+---
+
+### 💡 Contribution Overview
+
+My work focused on combining **AI, external travel APIs, and user-generated content** to create a more personalized and practical travel experience.
+
+The features I worked on cover multiple stages of the travel journey:
+
+```mermaid
+flowchart LR
+
+    A[Travel Preferences]
+    --> B[AI Destination Recommendations]
+
+    B --> C[Compare Countries]
+
+    C --> D[Select Destination]
+
+    D --> E[Create Trip]
+
+    E --> F[Weather & Holidays]
+
+    E --> G[AI Packing List]
+
+    E --> H[AI Transportation]
+
+    H --> I[Email Transportation Information]
+
+    J[Travel Community]
+    --> K[Create & Explore Posts]
+
+    K --> L[AI Community Moderator]
+```
+
+---
+
+## Plan | Lama Alharbi
+
+#### Overview
+
+My main responsibility in **SahlDarbak** was the **Trip Planning flow**.
+
+My work focused on transforming the traveler's initial trip information and preferences into a structured and personalized travel plan.
+
+The planning flow covers the journey from creating the travel request, collecting traveler preferences and restrictions, planning cities, generating a smart itinerary, allowing the traveler to review and customize the plan, and finally generating an estimated trip budget.
+
+The general flow of my contribution is:
+
+```mermaid
+flowchart TD
+
+    A[Create Travel Request]
+    --> B[Add Preferences & Restrictions]
+
+    B --> C[Submit Travel Request]
+
+    C --> D[Destination Selected / Recommended]
+
+    D --> E{City Planning Mode}
+
+    E -->|Single City| H[Generate Smart Itinerary]
+
+    E -->|Multi-City Manual| F[Add & Organize Trip Cities]
+
+    E -->|Multi-City AI| G[Generate AI City Plan]
+
+    G --> G1[Review City Plan]
+
+    G1 -->|Accept| H
+    G1 -->|Cancel| G
+
+    F --> H
+
+    H --> I[Review Suggested Itinerary]
+
+    I -->|Accept| J[Convert Plan into Customizable Trip Places]
+    I -->|Cancel| H
+
+    J --> K[Customize Trip Places]
+
+    K --> L[Generate AI Budget Estimate]
+
+    L --> M[View / Refresh Budget]
+
+    J --> N[Send Itinerary by Email]
+```
+
+The goal of this flow is to allow AI to provide intelligent planning support while keeping the traveler in control of the final trip.
+
+---
+
+### Models & CRUD
+
+I implemented the models and backend operations required to collect and manage the traveler's trip-planning information.
+
+| Model | Responsibility |
+|---|---|
+| `TravelRequest` | Stores the main trip information including dates, budget, travel type, group/family information, status, and city planning mode. |
+| `GeneralPreference` | Stores general preferences such as preferred weather, environment, crowd level, and trip pace. |
+| `FoodPreference` | Stores the traveler's food preferences and whether they are required. |
+| `ActivityPreference` | Stores preferred activities and their priority. |
+| `TravelRestriction` | Stores travel restrictions such as allergy, accessibility, dietary, medical, or other restrictions. |
+| `Child` | Stores child information for family trips. |
+| `TripCity` | Represents cities included in a multi-city trip with their dates, order, and planning status. |
+| `Itinerary` | Stores the generated itinerary, its status, generation time, and generated plan data. |
+
+These models are connected to the main planning flow through their corresponding repositories, services, controllers, validations, and CRUD/business operations.
+
+---
+
+### Travel Request & Preferences
+
+The planning process starts with a `TravelRequest`.
+
+It contains the main information needed to understand the trip before generating any travel plan.
+
+The request includes information such as:
+
+- Travel start and end dates
+- Budget
+- Travel type
+- Group size
+- Number of adults
+- City planning mode
+- Request status
+
+The traveler can then define additional preferences through:
+
+- `GeneralPreference`
+- `FoodPreference`
+- `ActivityPreference`
+- `TravelRestriction`
+- `Child`
+
+This allows the system to build a richer context before using AI for city planning, itinerary generation, or budget estimation.
+
+---
+
+### Travel Request Business Rules
+
+A new travel request starts with the status:
+
+```text
+draft
+```
+
+The supported travel types are:
+
+```text
+solo
+couple
+group
+family
+```
+
+Important business rules include:
+
+- The trip end date must be after the start date.
+- The budget must be greater than zero.
+- A `group` trip requires a valid group size.
+- A `family` trip requires the number of adults.
+- A family trip must include at least one child before submission.
+- Children must be between 0 and 17 years old.
+- A general preference must exist before submitting the travel request.
+- A travel request cannot be updated after a Trip has already been created from it.
+- A travel request linked to a Trip cannot be deleted.
+- After validating the required information, the request can be submitted and its status changes from `draft` to `open`.
+
+---
+
+### City Planning
+
+SahlDarbak supports three city-planning modes:
+
+```text
+single_city
+multi_city_manual
+multi_city_ai
+```
+
+#### Single-City Planning
+
+For a single-city trip, the selected city can be used directly when generating the smart itinerary.
+
+---
+
+#### Manual Multi-City Planning
+
+The traveler can manually add and organize the cities that will be visited during the trip.
+
+The backend validates the city plan to make sure that:
+
+- The TravelRequest uses `multi_city_manual`.
+- City dates remain within the overall travel dates.
+- City date ranges do not overlap.
+- The end date is not before the start date.
+- Each city has a valid order.
+
+This gives the traveler full control over the cities while still protecting the trip from invalid date combinations.
+
+---
+
+#### AI Multi-City Planning
+
+For trips using:
+
+```text
+multi_city_ai
+```
+
+the city plan is generated using AI.
+
+The system sends the trip information and traveler preferences to the AI city planner.
+
+Generated cities are initially stored with the status:
+
+```text
+suggested
+```
+
+The traveler can then review the complete city plan and either:
+
+- Accept it.
+- Cancel it and generate another plan.
+
+Once the plan is accepted, the cities become part of the confirmed trip plan.
+
+---
+
+### AI Features
+
+I implemented three AI-powered services using **Google Gemini**.
+
+---
+
+#### 1. Smart City Planner
+
+##### `SmartCityPlannerAIService`
+
+This service generates a multi-city plan for trips using AI city planning.
+
+The AI receives trip context such as:
+
+- Destination country
+- Travel dates
+- Trip duration
+- Traveler preferences
+- Travel style
+- City planning requirements
+
+It generates a structured city plan that distributes the available trip days between suitable cities.
+
+The plan includes information such as:
+
+- City
+- City order
+- Start date
+- End date
+- Reason for the city recommendation
+
+The generated plan is saved as a suggested plan until the traveler accepts it.
+
+---
+
+#### 2. Smart Itinerary Generator
+
+##### `SmartItineraryAIService`
+
+This service generates a personalized daily itinerary for the trip.
+
+Instead of depending only on AI-generated place names, the itinerary generation process retrieves real place information before sending the planning context to Gemini.
+
+The AI receives:
+
+- Trip destination
+- Travel dates
+- General preferences
+- Food preferences
+- Activity preferences
+- Travel restrictions
+- Trip pace
+- Candidate hotels
+- Candidate restaurants
+- Candidate activities
+
+The generated itinerary can include:
+
+- Hotels
+- Restaurants
+- Activities
+- Daily places
+- Suggested times
+- Recommendation reasons
+- Official website information
+- Available halal-related information
+
+The AI organizes the available places into a daily plan that better matches the traveler's preferences and trip dates.
+
+---
+
+#### 3. AI Trip Budget Estimate
+
+##### `TripBudgetEstimateAIService`
+
+This service generates an estimated budget based on the actual trip context.
+
+The estimate includes:
+
+- Flight estimate
+- Accommodation estimate
+- Food estimate
+- Transportation estimate
+- Activities estimate
+- Total estimate
+
+The AI budget context can include:
+
+- Departure country
+- Departure city
+- Destination
+- Travel dates
+- Number of trip days and nights
+- Traveler's target budget
+- Requested currency
+- Travel type
+- Group size
+- Number of adults
+- Children
+- Traveler preferences
+- Single-city or multi-city plan
+
+For a multi-city trip, the budget calculation uses the accepted city plan.
+
+The traveler can later refresh the estimate when a new calculation is needed.
+
+---
+
+### External APIs & Integrations
+
+#### Google Gemini
+
+**Google Gemini** is the AI engine used in my planning flow.
+
+I used Gemini for:
+
+- Smart city planning
+- Smart itinerary generation
+- Trip budget estimation
+
+The AI flow also supports generating content based on the selected Arabic or English application language where applicable.
+
+---
+
+#### Geoapify
+
+##### `GeoapifyService`
+
+I implemented and used `GeoapifyService` to retrieve real geographical and place information used during trip planning.
+
+It is used for information such as:
+
+- City coordinates
+- Hotels
+- Restaurants
+- Activities
+- Place identifiers
+- Location-related information
+
+This allows the itinerary-generation process to provide Gemini with real place candidates instead of relying only on generated place names.
+
+---
+
+#### Tavily
+
+##### `TavilyService`
+
+I implemented and used `TavilyService` to enrich the place information used during smart itinerary generation.
+
+It is used for tasks such as:
+
+- Retrieving additional hotel information
+- Retrieving rating or pricing-related information when available
+- Searching for halal-related evidence for restaurants
+
+Halal-related information is used as supporting travel information and is not treated as an official halal certification.
+
+---
+
+#### Brevo Email API
+
+##### `EmailService`
+
+I implemented Email delivery using the **Brevo Email API**.
+
+The generated itinerary can be sent to the traveler's Email.
+
+The itinerary Email supports both:
+
+```text
+Arabic
+English
+```
+
+based on the selected application language.
+
+---
+
+#### WhatsApp Usage
+
+One of my itinerary endpoints uses the project's existing WhatsApp integration to send the traveler's current daily plan.
+
+My work includes retrieving the accepted `TripPlace` records for the current day and building the daily-plan message before passing it to the existing WhatsApp service.
+
+> The WhatsApp integration itself was not implemented by me.
+
+---
+
+### Itinerary Lifecycle
+
+The smart itinerary follows a controlled lifecycle.
+
+```text
+Generate
+   ↓
+Suggested
+   ↓
+Review
+   ├── Cancel
+   ↓
+Accept
+   ↓
+Create TripPlace Records
+   ↓
+Customizable Trip Plan
+```
+
+When the itinerary is first generated, its status is:
+
+```text
+suggested
+```
+
+The traveler can review the suggested itinerary before accepting it.
+
+If the itinerary is cancelled while still suggested, it is removed and another one can be generated.
+
+When the itinerary is accepted:
+
+- The generated plan is read.
+- Planned places are converted into `TripPlace` records.
+- Each place keeps its city and scheduled date.
+- The itinerary status changes to `accepted`.
+- The trip plan becomes customizable.
+
+This separates the AI suggestion from the final user-controlled trip.
+
+---
+
+### Trip Customization
+
+After the itinerary is accepted, the traveler is not limited to the original AI-generated plan.
+
+The accepted trip can be customized through `TripPlace`.
+
+The planning flow supports:
+
+- Viewing all places belonging to the trip.
+- Viewing places scheduled for a specific date.
+- Viewing today's trip plan.
+- Adding new places.
+- Updating existing places.
+- Removing places.
+
+This allows the AI to create the initial structure while the traveler keeps control over the final itinerary.
+
+---
+
+### Budget Estimation Flow
+
+The budget estimate is generated after the Trip exists.
+
+The system gathers the trip context and sends it to the AI budget service.
+
+The result is stored as the trip's current budget estimate.
+
+The traveler can then:
+
+```text
+Generate Estimate
+      ↓
+View Estimate
+      ↓
+Refresh Estimate
+```
+
+This makes the estimate reusable instead of generating a new AI response every time the page is opened.
+
+---
+
+### Technologies Used in My Contribution
+
+| Technology | Usage |
+|---|---|
+| **Java** | Main backend programming language |
+| **Spring Boot** | Backend application framework |
+| **Spring Web MVC** | REST controllers and HTTP APIs |
+| **Spring Data JPA** | Repository and database access |
+| **Hibernate** | ORM and entity relationships |
+| **Jakarta Validation** | Model and request validation |
+| **MySQL** | Relational database |
+| **REST APIs** | Backend communication and external integrations |
+| **Google Gemini** | AI city planning, itinerary generation, and budget estimation |
+| **Geoapify API** | Places and location data |
+| **Tavily API** | Additional travel/place information and halal-related evidence |
+| **Brevo Email API** | Itinerary Email delivery |
+| **Jackson / ObjectMapper** | AI JSON serialization and parsing |
+| **Lombok** | Reducing Java boilerplate code |
+
+---
+
+### Extra Endpoints
+
+In addition to the CRUD operations, I implemented the following business endpoints for the planning flow.
+
+| # | Endpoint | Method | API | Description |
+|---:|---|---|---|---|
+| 1 | Generate Smart Itinerary | `POST` | `/api/v1/trip/generate-smart-itinerary/{tripId}?lang={lang}` | Generates a personalized AI-powered daily itinerary for the selected trip. |
+| 2 | Generate City Plan | `POST` | `/api/v1/trip/generate-city-plan/{tripId}?lang={lang}` | Generates an AI-based multi-city plan and distributes the trip dates between suggested cities. |
+| 3 | Get Trip by Travel Request | `GET` | `/api/v1/trip/get-by-travel-request/{travelRequestId}` | Retrieves the Trip linked to a specific TravelRequest. |
+| 4 | Get Trip by ID | `GET` | `/api/v1/trip/get-by-id/{tripId}` | Retrieves a Trip using its ID. |
+| 5 | Get Trip Places by Date | `GET` | `/api/v1/trip-place/get-by-date/{tripId}/{date}` | Retrieves all accepted trip places scheduled for a specific date. |
+| 6 | Get Today's Plan | `GET` | `/api/v1/trip-place/today/{tripId}` | Retrieves the accepted trip places scheduled for the current date. |
+| 7 | Get Trip Places by Trip | `GET` | `/api/v1/trip-place/get-by-trip/{tripId}` | Retrieves all customizable TripPlace records belonging to a trip. |
+| 8 | Get Trip Cities | `GET` | `/api/v1/trip-city/get-by-trip/{tripId}` | Retrieves all cities included in a trip. |
+| 9 | Accept City Plan | `POST` | `/api/v1/trip-city/accept-city-plan/{tripId}` | Accepts the AI-generated suggested city plan. |
+| 10 | Cancel City Plan | `DELETE` | `/api/v1/trip-city/cancel-city-plan/{tripId}` | Cancels and removes the current suggested AI city plan. |
+| 11 | Generate Budget Estimate | `POST` | `/api/v1/trip-budget-estimate/generate/{tripId}?lang={lang}` | Generates and stores an AI-powered budget estimate for the trip. |
+| 12 | Get Budget Estimate | `GET` | `/api/v1/trip-budget-estimate/get-by-trip/{tripId}` | Retrieves the current budget estimate linked to a trip. |
+| 13 | Refresh Budget Estimate | `PUT` | `/api/v1/trip-budget-estimate/refresh/{tripId}?lang={lang}` | Regenerates and updates an existing trip budget estimate. |
+| 14 | Submit Travel Request | `PUT` | `/api/v1/travel-request/submit-travel-request/{travelRequestId}` | Validates the completed travel request and changes its status from draft to open. |
+| 15 | Get Travel Requests by User | `GET` | `/api/v1/travel-request/get-by-user/{userId}` | Retrieves all travel requests belonging to a specific user. |
+| 16 | Get Travel Request by ID | `GET` | `/api/v1/travel-request/get-by-id/{travelRequestId}` | Retrieves a specific TravelRequest using its ID. |
+| 17 | Accept Itinerary | `POST` | `/api/v1/itinerary/accept/{tripId}` | Accepts a suggested itinerary and converts its planned places into customizable TripPlace records. |
+| 18 | Cancel Itinerary | `DELETE` | `/api/v1/itinerary/cancel/{tripId}` | Cancels a suggested itinerary before it is accepted. |
+| 19 | Get Itinerary by Trip | `GET` | `/api/v1/itinerary/get-by-trip/{tripId}` | Retrieves the generated itinerary and its current status for a trip. |
+| 20 | Send Itinerary by Email | `POST` | `/api/v1/itinerary/send-email/{tripId}?lang={lang}` | Sends the generated itinerary to the traveler's Email using the selected language. |
+| 21 | Send Today's Plan by WhatsApp | `POST` | `/api/v1/itinerary/send-today-whatsapp/{tripId}` | Builds today's plan from the accepted TripPlace records and sends it using the project's existing WhatsApp service. |
+
+---
+
+### Contribution Summary
+
+My contribution focused on the **planning stage of SahlDarbak**.
+
+I implemented the data models and business logic required to collect the traveler's trip information and preferences, validate and submit travel requests, plan cities manually or using AI, generate personalized itineraries using real place data, manage the itinerary lifecycle, customize accepted trip plans, estimate trip budgets, and send itinerary information by Email.
+
+I also implemented the AI services used for:
+
+- Multi-city planning
+- Smart itinerary generation
+- Trip budget estimation
+
+and integrated the planning flow with:
+
+- Gemini
+- Geoapify
+- Tavily
+- Brevo Email API
+
+The main idea behind my work was to make AI assist the traveler throughout the planning process without removing user control.
+
+**AI creates the initial intelligent plan, while the traveler reviews, accepts, and customizes the final trip.**
+
+---
+
+## Explore | Mohammed Aljubaili
 
 ### 1. Flow Brief
 
@@ -388,7 +1151,29 @@ Intentionally missing operations:
 
 ---
 
-### 5. External APIs and Technologies
+### 5. AI Usage
+
+```http
+GET /api/v1/assistant/city-guide/{userId}
+```
+
+Generates a short, practical guide for the city the traveler is currently in, shown on the City Hub page.
+
+| Item | Details |
+|---|---|
+| **AI Model** | Google Gemini Flash Lite (`gemini-flash-lite-latest`) |
+| **Input** | City and country from the traveler's latest check-in (`TravelPresence`) |
+| **Prompt** | The model acts as a local guide and must answer in Arabic, in exactly 4 sections: local tips, etiquette and culture, safety, emergency numbers |
+| **Output** | Plain Arabic text, 3 to 5 short points per section, 250 words at most |
+| **Safety rules in the prompt** | No invented information; only national emergency numbers the model is sure of, and the section ends with a reminder to verify them locally |
+| **If no check-in** | The request is rejected with "check in to a city first" |
+| **Code** | `TravelerAssistantService.getCityGuide()`, which builds the prompt and calls `ask()` |
+
+The frontend splits the text into the 4 sections and shows each one as a card.
+
+---
+
+### 6. External APIs and Technologies
 
 | Service | Used for | Where |
 |---|---|---|
@@ -416,17 +1201,16 @@ whatsapp.access-token=${WHATSAPP_ACCESS_TOKEN}
 ```
 
 Nominatim needs no key.
+
 ---
 
 ## Team
 
-| Team Member | Main Area |
-|---|---|
-| **Razan Almadan** | Discover |
-| **Lama Alharbi** | Plan |
-| **Mohammed Aljubaili** | Explore |
-
----
+| Team Member | Main Area | Links |
+|---|---|---|
+| **Razan Almadan** | Discover | [GitHub](https://github.com/RazanAlmadan/SahilDarbak) · [LinkedIn](https://www.linkedin.com/in/razanalmadan/) |
+| **Lama Alharbi** | Plan | [GitHub](https://github.com/lamaS10/SahilDarbak) · [LinkedIn](https://www.linkedin.com/in/lama-alharbi-372bb920a/) |
+| **Mohammed Aljubaili** | Explore | [GitHub](https://github.com/mohammed-turk/SahilDarbak) · [LinkedIn](https://www.linkedin.com/in/mohammed-aljubaili/) |
 
 <div align="center">
 
